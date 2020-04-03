@@ -1,20 +1,18 @@
 ﻿using Flows.Primitives.Exceptions;
 using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Flows.Primitives.Dependencies
 {
     public class HandlerResolver : IHandlerResolver
     {
-        private readonly IResolver _resolver;
+        public HandlerResolver(IServiceProvider service) => _service = service;
 
-        public HandlerResolver(IResolver resolver)
-        {
-            _resolver = resolver;
-        }
+        private readonly IServiceProvider _service;
 
         public THandler ResolveHandler<THandler>()
-        {
-            var handler = _resolver.Resolve<THandler>();
+        {            
+            var handler = _service.GetService<THandler>();
 
             if (handler == null)
                 throw new HandlerNotFoundException(typeof(THandler));
@@ -24,28 +22,12 @@ namespace Flows.Primitives.Dependencies
 
         public object ResolveHandler(Type handlerType)
         {
-            var handler = _resolver.Resolve(handlerType);
+            var handler = _service.GetService(handlerType);
 
             if (handler == null)
                 throw new HandlerNotFoundException(handlerType);
 
             return handler;
-        }
-
-        public object ResolveHandler(object param, Type type)
-        {
-            var paramType = param.GetType();
-            var handlerType = type.MakeGenericType(paramType);
-            return ResolveHandler(handlerType);
-        }
-
-        public object ResolveQueryHandler(object query, Type type)
-        {
-            var queryType = query.GetType();
-            var queryInterface = queryType.GetInterfaces()[0];
-            var resultType = queryInterface.GetGenericArguments().FirstOrDefault();
-            var handlerType = type.MakeGenericType(queryType, resultType);
-            return ResolveHandler(handlerType);
         }
     }
 }
