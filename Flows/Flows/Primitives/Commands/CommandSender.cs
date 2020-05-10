@@ -2,6 +2,7 @@
 using Flows.Primitives.Dependencies;
 using Flows.Primitives.Domain;
 using Flows.Primitives.Events;
+using Flows.Primitives.Exceptions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,6 +34,9 @@ namespace Flows.Primitives.Commands
                 throw new ArgumentNullException();
 
             var handler = ResolveCommandHandler<TCommand>();
+
+            if (handler == null)
+                throw new HandlerNotFoundException();
 
             var result = await handler.ExecuteAsync(command);
 

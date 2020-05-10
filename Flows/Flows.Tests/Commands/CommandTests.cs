@@ -68,6 +68,7 @@ namespace Flows.Tests.Commands
                 Events = new List<FakeEvent>() { @event },
                 Result = new object()
             });
+
             _mapper.Setup(m => m.Map(It.IsAny<object>(), It.IsAny<Type>(), It.IsAny<Type>())).Returns(@event);
 
             await _sender.SendAsync(command);
@@ -77,6 +78,31 @@ namespace Flows.Tests.Commands
             Assert.Equal(command.Id, @event.CommandId);
             Assert.Equal(command.UserId, @event.UserId);
             Assert.Equal(command.AggregateRootId, @event.AggregateRootId);
+        }
+
+        [Fact]
+        public async Task Storage() {
+            var command = new FakeCommand() { 
+                UserId = 1,
+                AggregateRootId = Guid.NewGuid()
+            };
+            
+            var @event = new FakeEvent();
+
+            _resolver.Setup(x => x.ResolveHandler<ICommandHandler<FakeCommand>>()).Returns(_handler.Object);
+
+            _handler.Setup(h => h.ExecuteAsync(command)).ReturnsAsync(new CommandResponse()
+            {
+                Events = new List<FakeEvent>() { @event },
+                Result = new object()
+            });
+
+            _mapper.Setup(m => m.Map(It.IsAny<object>(), It.IsAny<Type>(), It.IsAny<Type>())).Returns(@event);
+
+            await _sender.SendAsync(command);
+
+            _store.Verify(p => p.SaveAsync(It.Is<StoreData>(d => d.AggregateRootId == command.AggregateRootId 
+                && d.Command == command)), Times.Once);
         }
     }
 }
