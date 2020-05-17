@@ -10,9 +10,9 @@ using Xunit;
 
 namespace Flows.Tests.Events
 {
-    public class EventsTests
+    public class EventsPublisherTests
     {
-        public EventsTests()
+        public EventsPublisherTests()
         {
             _handler = new Mock<IEventHandler<FakeEvent>>();            
             _resolver = new Mock<IResolver>();            

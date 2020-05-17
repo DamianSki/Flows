@@ -7,7 +7,7 @@ namespace Flows.Primitives.Query
 {
     public interface IQueryProcessor
     {
-        Task<TResult> ProcessAync<TResult>(IQuery<TResult> query);
+        Task<TResult> ProcessAync<TQuery, TResult>(TQuery query) where TQuery : IQuery<TResult>;
     }
 
     public class QueryProcessor : IQueryProcessor
@@ -16,12 +16,12 @@ namespace Flows.Primitives.Query
 
         private readonly IResolver _resolver;
 
-        public async Task<TResult> ProcessAync<TResult>(IQuery<TResult> query)
+        public async Task<TResult> ProcessAync<TQuery, TResult>(TQuery query) where TQuery : IQuery<TResult>
         {
             if (query == null)
                 throw new ArgumentNullException(nameof(query));
 
-            var handler = _resolver.Resolve<IQueryHandler<IQuery<TResult>, TResult>>();
+            var handler = _resolver.Resolve<IQueryHandler<TQuery, TResult>>();
 
             if (handler == null)
                 throw new HandlerNotFoundException();

@@ -13,9 +13,9 @@ using Xunit;
 
 namespace Flows.Tests.Commands
 {
-    public class CommandTests
+    public class CommandsSenderTests
     {
-        public CommandTests()
+        public CommandsSenderTests()
         {
             _handler = new Mock<ICommandHandler<FakeCommand>>();
             _resolver = new Mock<IResolver>();
