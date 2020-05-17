@@ -1,8 +1,5 @@
 ﻿namespace Flows.Primitives.Query
 {
-    public interface IQuery<TResult>
-    {
-
-    }
+    public interface IQuery<TResult> { }
 }
          

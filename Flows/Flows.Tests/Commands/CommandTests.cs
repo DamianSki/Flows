@@ -18,7 +18,7 @@ namespace Flows.Tests.Commands
         public CommandTests()
         {
             _handler = new Mock<ICommandHandler<FakeCommand>>();
-            _resolver = new Mock<IHandlerResolver>();
+            _resolver = new Mock<IResolver>();
             _publicsher = new Mock<IEventPublisher>();            
             _mapper = new Mock<IMapper>();            
             _store = new Mock<IStorage>();
@@ -28,7 +28,7 @@ namespace Flows.Tests.Commands
 
         private ICommandSender _sender;
 
-        private Mock<IHandlerResolver> _resolver;
+        private Mock<IResolver> _resolver;
         private Mock<IEventPublisher> _publicsher;
         private Mock<ICommandHandler<FakeCommand>> _handler;
         private Mock<IStorage> _store;
@@ -40,7 +40,7 @@ namespace Flows.Tests.Commands
         [Fact]
         public async Task ExecuteAsync()
         {                                   
-            _resolver.Setup(x => x.ResolveHandler<ICommandHandler<FakeCommand>>()).Returns(_handler.Object);
+            _resolver.Setup(x => x.Resolve<ICommandHandler<FakeCommand>>()).Returns(_handler.Object);
             
             await _sender.SendAsync(new FakeCommand()
             {
@@ -62,7 +62,7 @@ namespace Flows.Tests.Commands
 
             var @event = new FakeEvent();
 
-            _resolver.Setup(x => x.ResolveHandler<ICommandHandler<FakeCommand>>()).Returns(_handler.Object);
+            _resolver.Setup(x => x.Resolve<ICommandHandler<FakeCommand>>()).Returns(_handler.Object);
             _handler.Setup(h => h.ExecuteAsync(command)).ReturnsAsync(new CommandResponse()
             {
                 Events = new List<FakeEvent>() { @event },
@@ -89,7 +89,7 @@ namespace Flows.Tests.Commands
             
             var @event = new FakeEvent();
 
-            _resolver.Setup(x => x.ResolveHandler<ICommandHandler<FakeCommand>>()).Returns(_handler.Object);
+            _resolver.Setup(x => x.Resolve<ICommandHandler<FakeCommand>>()).Returns(_handler.Object);
 
             _handler.Setup(h => h.ExecuteAsync(command)).ReturnsAsync(new CommandResponse()
             {

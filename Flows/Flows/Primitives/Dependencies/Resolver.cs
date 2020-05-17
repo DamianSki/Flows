@@ -1,16 +1,17 @@
 ﻿using Flows.Primitives.Exceptions;
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 
 namespace Flows.Primitives.Dependencies
 {
-    public class HandlerResolver : IHandlerResolver
+    public class Resolver : IResolver
     {
-        public HandlerResolver(IServiceProvider service) => _service = service;
+        public Resolver(IServiceProvider service) => _service = service;
 
         private readonly IServiceProvider _service;
 
-        public THandler ResolveHandler<THandler>()
+        public THandler Resolve<THandler>()
         {            
             var handler = _service.GetService<THandler>();
 
@@ -20,7 +21,7 @@ namespace Flows.Primitives.Dependencies
             return handler;
         }
 
-        public object ResolveHandler(Type handlerType)
+        public object Resolve(Type handlerType)
         {
             var handler = _service.GetService(handlerType);
 
@@ -29,5 +30,7 @@ namespace Flows.Primitives.Dependencies
 
             return handler;
         }
+
+        public IEnumerable<THandler> ResolveAll<THandler>() => _service.GetServices<THandler>();
     }
 }

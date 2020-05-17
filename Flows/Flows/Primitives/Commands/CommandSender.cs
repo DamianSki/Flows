@@ -11,8 +11,7 @@ namespace Flows.Primitives.Commands
 {
     public class CommandSender : ICommandSender
     {
-
-        public CommandSender(IHandlerResolver resolver, IEventPublisher publisher, IStorage storage, IMapper mapper)
+        public CommandSender(IResolver resolver, IEventPublisher publisher, IStorage storage, IMapper mapper)
         {
             _resolver = resolver;
             _publisher = publisher;
@@ -20,7 +19,7 @@ namespace Flows.Primitives.Commands
             _mapper = mapper;
         }
 
-        private readonly IHandlerResolver _resolver;
+        private readonly IResolver _resolver;
         private readonly IEventPublisher _publisher;
         private readonly IStorage _storage;
         private readonly IMapper _mapper;
@@ -31,7 +30,7 @@ namespace Flows.Primitives.Commands
         private async Task<CommandResponse> ProcessAsync<TCommand>(TCommand command) where TCommand : ICommand 
         {
             if (command == null)
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(command));
 
             var handler = ResolveCommandHandler<TCommand>();
 
@@ -59,6 +58,6 @@ namespace Flows.Primitives.Commands
             return result;
         }
 
-        private ICommandHandler<TCommand> ResolveCommandHandler<TCommand>() where TCommand : ICommand => _resolver.ResolveHandler<ICommandHandler<TCommand>>();
+        private ICommandHandler<TCommand> ResolveCommandHandler<TCommand>() where TCommand : ICommand => _resolver.Resolve<ICommandHandler<TCommand>>();
     }
 }
